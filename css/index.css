@@ -1,0 +1,28 @@
+header ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+header nav {
+  margin-bottom: 50px;
+}
+
+main ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-content: space-between;
+}
+
+a li {
+  list-style-type: none;
+}
+
+ul a {
+  font-size: 1.5em;
+  margin: 5px;
+  padding: 3px;
+}

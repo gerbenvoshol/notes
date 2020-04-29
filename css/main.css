@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: serif;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  width: 75vw;
+  max-width: 700px;
+  margin: auto;
+  padding-top: 25vh;
+}
+
+a {
+  color: inherit;
+  background-color: #000000;
+  text-decoration: none;
+}
+
+a:hover, ::selection {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+header {
+  text-align: center;
+}
+
+header > a > span:before {
+  content: "[";
+}
+
+header > a > span:after {
+  content: "]";
+}

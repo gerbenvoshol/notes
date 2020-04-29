@@ -1,0 +1,51 @@
+header nav {
+  font-size: 1.2em;
+  margin-bottom: 20px;
+}
+
+header ul {
+  display: inline;
+}
+
+header li {
+  display: inline;
+  margin-left: 5px;
+}
+
+header li:not(:last-child):after {
+  content: ",";
+}
+
+main > * {
+  margin-bottom: 12px;
+}
+
+main li {
+  margin-bottom: 3px;
+  margin-left: 1em;
+}
+
+main a:before {
+  content: "[";
+}
+
+main a:after {
+  content: "]";
+}
+
+main pre {
+  font-family: monospace;
+  background-color: #222;
+  border: 1px solid #999;
+  display: block;
+  padding: 5px;
+  overflow: auto;
+}
+
+main code {
+  font-family: monospace;
+}
+
+main {
+  font-size: 1.2em;
+}
