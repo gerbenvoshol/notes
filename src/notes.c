@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "helpers.c"
+#include "helpers.h"
 #include "md_renderer.h"
 
 #define TAG_LIMIT 16
