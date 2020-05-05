@@ -1,5 +1,7 @@
 param (
-  [String]$FileToOpen = ""
+  [String]$FileToOpen = "",
+  [int]$RemoveRemote = 0,
+  [int]$RemoveLocal = 0
 )
 
 Write-Output "========================="
@@ -20,14 +22,18 @@ $notes = $notes.ToArray()
 
 Write-Output "Compiling tool..."
 
-clang notes.c md_renderer.c md4c/md4c.c -o notes.exe -Wno-deprecated-declarations
+clang notes.c md_renderer.c md4c/md4c.c helpers.c -o notes.exe -Wno-deprecated-declarations
 
 Write-Output "Building notes..."
 
-Remove-Item "../remote/*.html"
-Remove-Item "../remote/tags/*.html"
-Remove-Item "../local/*.html"
-Remove-Item "../local/tags/*.html"
+if ($RemoveLocal -ne 0) {
+  Remove-Item "../local/*.html"
+  Remove-Item "../local/tags/*.html"
+}
+if ($RemoveRemote -ne 0) {
+  Remove-Item "../remote/*.html"
+  Remove-Item "../remote/tags/*.html"
+}
 
 .\notes.exe $notes
 

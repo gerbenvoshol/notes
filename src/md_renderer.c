@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "helpers.h"
 
 #define MD4C_FLAG_OPTIONS                                                      \
   MD_FLAG_WIKILINKS | MD_FLAG_LATEXMATHSPANS | MD_FLAG_STRIKETHROUGH |         \
@@ -29,6 +32,9 @@ static void
 render_a(MD_SPAN_A_DETAIL *detail, FILE *f) {
   fputs("<a href='", f);
   render_str(detail->href.text, detail->href.size, f);
+  if (strmatch("http", 4, detail->href.text, detail->href.size) > 3) {
+    fputs("' class='external", f);
+  }
   fputs("'>", f);
 }
 

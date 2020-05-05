@@ -1,6 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 
+size_t strmatch(const char *str1, size_t size1, const char *str2, size_t size2) {
+  size_t match = 0;
+  for (size_t i = 0; i < size1 && i < size2; i++) {
+    if (str1[i] == str2[i]) {
+      match++;
+    } else {
+      return match;
+    }
+  }
+
+  return match;
+}
+
 size_t read_content(FILE *f, char *buffer, size_t size) {
   for (size_t i = 0; i < size; i++) {
     int c = fgetc(f);

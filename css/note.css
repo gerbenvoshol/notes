@@ -33,6 +33,14 @@ main a:after {
   content: "]";
 }
 
+main a.external:before {
+  content: "{";
+}
+
+main a.external:after {
+  content: "}";
+}
+
 main pre {
   font-family: monospace;
   background-color: #222;
