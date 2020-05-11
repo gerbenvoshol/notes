@@ -4,7 +4,8 @@
 }
 </pre><h2>Iterate over files</h2><pre class='bash'>FILES="/var/log/*.log"
 for file in $FILES
-  echo "$file
+do
+  echo "$file"
 done
 </pre><h2>Extract path, filename and extension using sed</h2><pre class='bash'>FILE="../.we-ird_/påth/file.name.txt"
 FILEDIR=`echo $FILE | sed "s/^\(\S*\/\)\(.\+\)\(\.[^\.]\+\)$/\1/g"`

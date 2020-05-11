@@ -1,5 +1,18 @@
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+
+/* unless otherwise specified, none of the following
+ * functions work on non-ascii characters.
+ */
+
+void strreplace(char *str, char from, char to) {
+  for (int i = 0; str[i] != 0; i++) {
+    if (str[i] == from) {
+      str[i] = to;
+    }
+  }
+}
 
 size_t strmatch(const char *str1, size_t size1, const char *str2, size_t size2) {
   size_t match = 0;

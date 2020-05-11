@@ -53,8 +53,12 @@ parse_metadata(FILE *in_f, meta_note *note) {
       c = meta[i];
       if (c == ',' || c == '\0') {
         note->tags[tag][tag_i] = '\0';
+	// before incrementing the tag number, make sure the tag
+	// is not just an empty tag
+	if (tag_i > 0 && note->tags[tag][tag_i - 1] != '\0') {
+          tag++;
+	}
         tag_i = 0;
-        tag++;
       } else {
         note->tags[tag][tag_i] = c;
         tag_i++;
@@ -135,7 +139,9 @@ int
 write_note(const char *dir, const char *note_contents, size_t size,
            meta_note *note) {
   char out_path[STR_BUFFER];
+  char tag_path[TAG_STR_BUFFER];
   memset(out_path, 0, STR_BUFFER);
+  memset(tag_path, 0, TAG_STR_BUFFER);
   sprintf(out_path, "%s%s", dir, note->path);
   FILE *f = fopen(out_path, "w");
   if (!f) {
@@ -155,8 +161,11 @@ write_note(const char *dir, const char *note_contents, size_t size,
   if (note->tag_count > 0) {
     fputs("<nav>Tags:<ul>", f);
     for (int i = 0; i < note->tag_count; i++) {
-      fprintf(f, "<li><a href='tags/%s.html'>%s</a></li>", note->tags[i],
+      strcpy(tag_path, note->tags[i]);
+      strreplace(tag_path, ' ', '-');
+      fprintf(f, "<li><a href='tags/%s.html'>%s</a></li>", tag_path,
               note->tags[i]);
+      memset(tag_path, 0, TAG_STR_BUFFER);
     }
     fputs("</ul></nav>", f);
   }
@@ -182,6 +191,7 @@ write_index_tag(const char *dir, const char tag[TAG_STR_BUFFER],
   char out_path[STR_BUFFER];
   memset(out_path, 0, STR_BUFFER);
   sprintf(out_path, "%stags/%s.html", dir, tag);
+  strreplace(out_path, ' ', '-');
   FILE *f = fopen(out_path, "w");
   if (!f) {
     fprintf(stderr, "could not open file '%s'.", out_path);
@@ -215,7 +225,9 @@ write_indexes(const char *dir, const char tag_dict[][TAG_STR_BUFFER],
               bool public) {
   int i;
   char out_path[STR_BUFFER];
+  char tag_path[TAG_STR_BUFFER];
   memset(out_path, 0, STR_BUFFER);
+  memset(tag_path, 0, TAG_STR_BUFFER);
   sprintf(out_path, "%sindex.html", dir);
   FILE *f = fopen(out_path, "w");
   if (!f) {
@@ -229,10 +241,13 @@ write_indexes(const char *dir, const char tag_dict[][TAG_STR_BUFFER],
 
   // build tags
   for (i = 0; i < tag_dict_size; i++) {
+    strcpy(tag_path, tag_dict[i]);
+    strreplace(tag_path, ' ', '-');
     write_index_tag(dir, tag_dict[i], notes, notes_size, public);
 
-    fprintf(f, "<a href='tags/%s.html'><li>%s</li></a>", tag_dict[i],
+    fprintf(f, "<a href='tags/%s.html'><li>%s</li></a>", tag_path,
             tag_dict[i]);
+    memset(tag_path, 0, TAG_STR_BUFFER);
   }
   fputs("</ul></nav></header>", f);
   fprintf(f, "<%s>", wrapper_tag);
