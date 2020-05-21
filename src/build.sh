@@ -1,8 +1,13 @@
 #!/bin/bash
 
-notes="../notes/*.md"
+DIR=$( dirname $(readlink -f "$0"))
+cd $DIR
 
-gcc notes.c md_renderer.c md4c/md4c.c helpers.c -o notes
+notes=$( ls -c ../notes/*.md )
+
+gcc notes.c md_renderer.c md4c/md4c.c helpers.c -o notes || {
+  exit 1
+}
 
 rm ../local/*.html
 rm ../local/tags/*.html
@@ -11,7 +16,8 @@ rm ../remote/tags/*.html
 
 ./notes $notes
 
-echo "Done"
-
-falkon ../local/index.html
+if [ -n "$1" ]
+then
+  falkon ../local/index.html
+fi
 

@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 
 /* unless otherwise specified, none of the following
  * functions work on non-ascii characters.
+ * but you can try.
  */
 
 void strreplace(char *str, char from, char to) {
@@ -25,6 +27,10 @@ size_t strmatch(const char *str1, size_t size1, const char *str2, size_t size2) 
   }
 
   return match;
+}
+
+bool is_external(const char *url, size_t size) {
+  return strmatch("http", 4, url, size) > 3;
 }
 
 size_t read_content(FILE *f, char *buffer, size_t size) {

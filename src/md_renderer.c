@@ -33,7 +33,7 @@ static void
 render_a(MD_SPAN_A_DETAIL *detail, FILE *f) {
   fputs("<a href='", f);
   render_str(detail->href.text, detail->href.size, f);
-  if (strmatch("http", 4, detail->href.text, detail->href.size) > 3) {
+  if (is_external(detail->href.text, detail->href.size)) {
     fputs("' class='external", f);
   }
   fputs("'>", f);
@@ -43,6 +43,16 @@ static void
 render_code(MD_BLOCK_CODE_DETAIL *detail, FILE *f) {
   fputs("<pre class='", f);
   render_str(detail->lang.text, detail->lang.size, f);
+  fputs("'>", f);
+}
+
+static void
+render_wikilink(MD_SPAN_WIKILINK_DETAIL *detail, FILE *f) {
+  fputs("<a href='", f);
+  render_str(detail->target.text, detail->target.size, f);
+  if (is_external(detail->target.text, detail->target.size)) {
+    fputs("' class='external", f);
+  }
   fputs("'>", f);
 }
 
@@ -106,7 +116,7 @@ enter_span(MD_SPANTYPE type, void *detail, void *userdata) {
     case MD_SPAN_DEL: fputs("<del>", f); break;
     case MD_SPAN_LATEXMATH: fputs("<$>", f); break;
     case MD_SPAN_LATEXMATH_DISPLAY: fputs("<$$>", f); break;
-    case MD_SPAN_WIKILINK: fputs("<wikilink>", f); break;
+    case MD_SPAN_WIKILINK: render_wikilink(detail, f); break;
     case MD_SPAN_U: fputs("<u>", f); break;
   }
 
@@ -125,7 +135,7 @@ leave_span(MD_SPANTYPE type, void *detail, void *userdata) {
     case MD_SPAN_DEL: fputs("</del>", f); break;
     case MD_SPAN_LATEXMATH: fputs("</$>", f); break;
     case MD_SPAN_LATEXMATH_DISPLAY: fputs("</$$>", f); break;
-    case MD_SPAN_WIKILINK: fputs("</wikilink>", f); break;
+    case MD_SPAN_WIKILINK: fputs("</a>", f); break;
     case MD_SPAN_U: fputs("</u>", f); break;
   }
   return 0;
@@ -141,7 +151,7 @@ text(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE size, void *userdata) {
     case MD_TEXT_SOFTBR: fputs("<br>", f); break;
     case MD_TEXT_ENTITY: fputs("[entity]", f); break;
     case MD_TEXT_CODE: render_str(text, size, f); break;
-    case MD_TEXT_HTML: fputs("[some html]", f); break;
+    case MD_TEXT_HTML: render_str(text, size, f); break;
     case MD_TEXT_LATEXMATH: fputs("[some latexmath]", f); break;
   }
   return 0;

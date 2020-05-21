@@ -287,8 +287,8 @@ main(int argc, const char **argv) {
   memset(notes, 0, sizeof(notes));
   memset(tag_dict, 0, sizeof(tag_dict));
   memset(public_tag_dict, 0, sizeof(public_tag_dict));
-  printf("Note metadata is %llu kB\n", sizeof(notes) / 1024);
-  printf("Tag dictionaries are %llu kB\n",
+  printf("Note metadata is %lu kB\n", sizeof(notes) / 1024);
+  printf("Tag dictionaries are %lu kB\n",
          (sizeof(public_tag_dict) + sizeof(tag_dict)) / 1024);
 
   // build all notes
