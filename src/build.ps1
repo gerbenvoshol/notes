@@ -1,4 +1,5 @@
 param (
+  [int]$Compile = 1,
   [String]$FileToOpen = "",
   [int]$RemoveRemote = 0,
   [int]$RemoveLocal = 0
@@ -20,9 +21,11 @@ Write-Output "Notes: $($notes.Count)"
 
 $notes = $notes.ToArray()
 
-Write-Output "Compiling tool..."
+if ($Compile -ne 0) {
+  Write-Output "Compiling tool..."
 
-clang notes.c md_renderer.c md4c/md4c.c helpers.c -o notes.exe -Wno-deprecated-declarations
+  clang notes.c md_renderer.c md4c/md4c.c helpers.c -o notes.exe -Wno-deprecated-declarations
+}
 
 Write-Output "Building notes..."
 
