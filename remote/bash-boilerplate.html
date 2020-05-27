@@ -1,13 +1,31 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Bash Boilerplate</title><link rel=stylesheet href='../css/main.css'><link rel=stylesheet href='../css/note.css'></head><body><header><a href='index.html'><span>index</span></a><h1>Bash Boilerplate</h1><nav>Tags:<ul><li><a href='tags/code.html'>code</a></li><li><a href='tags/boilerplate.html'>boilerplate</a></li></ul></nav></header><main><p>A collection of pieces of bash script code that does certain things.</p><h2>Change to directory if possible</h2><pre class='bash'>cd $DIR || {
+<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Bash Boilerplate</title><link rel=stylesheet href='../css/main.css'><link rel=stylesheet href='../css/note.css'></head><body><header><a href='index.html'><span>index</span></a><h1>Bash Boilerplate</h1><nav>Tags:<ul><li><a href='tags/code.html'>code</a></li><li><a href='tags/boilerplate.html'>boilerplate</a></li><li><a href='tags/linux.html'>linux</a></li></ul></nav></header><main><p>A collection of pieces of bash script code that do certain things.</p><h2>Change to directory if possible</h2><pre class='bash'>cd $DIR || {
   echo "Cannot change to necessary directory." >&2
   exit $E_XCD;
 }
 </pre><h2>Iterate over files</h2><pre class='bash'>FILES="/var/log/*.log"
 for file in $FILES
-  echo "$file
+do
+  echo "$file"
 done
-</pre><h2>Extract path, filename and extension using sed</h2><pre class='bash'>FILE="../.we-ird_/påth/file.name.txt"
-FILEDIR=`echo $FILE | sed "s/^\(\S*\/\)\(.\+\)\(\.[^\.]\+\)$/\1/g"`
-FILENAME=`echo $FILE | sed "s/^\(\S*\/\)\(.\+\)\(\.[^\.]\+\)$/\2/g"`
-EXTENSION=`echo $FILE | sed "s/^\(\S*\/\)\(.\+\)\(\.[^\.]\+\)$/\3/g"`
-</pre><p><a href='https://tldp.org/LDP/abs/html/' class='external'>A good bash guide</a></p></main></body></html>
+# Using ls (here sorted after ctime)
+FILES=$( ls -c /var/log/*.log )
+for file in $FILES
+do
+  echo $file
+done
+</pre><h2>Extract path, filename and extension</h2><pre class='bash'>FILEPATH="../.we-ird_/påth/file.name.txt"
+FILEDIR="${FILEPATH%/*}"
+FILENAME="${FILEPATH##*/}"
+EXTENSION="${FILEPATH##*.}"
+NOEXTENSION="${FILEPATH%.*}"
+</pre><h2>Get the current working directory of the bash script</h2><pre class='bash'>DIR=$( dirname $(readlink -f "$0"))
+</pre><h2>Tests</h2><pre class='bash'>if [ -z "$1" ]
+then
+  echo "first parameter is null"
+fi
+
+if [ -n "$1" ]
+then
+  echo "first parameter is not null"
+fi
+</pre><p><a href='https://tldp.org/LDP/abs/html/' class='external'>A good bash guide</a><br><a href='https://github.com/dylanaraps/pure-bash-bible' class='external'>Pure bash bible</a></p></main></body></html>

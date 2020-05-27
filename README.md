@@ -17,6 +17,5 @@ Usage:
 `notes my-note.md [my-second-note.md my-third-note.md ...]`
 
 TODO:
-* Add a build script written in bash
 * Render HTML entities properly in markdown
-* Style external links differently from local links
+
