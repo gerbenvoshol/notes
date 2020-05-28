@@ -16,6 +16,8 @@ rm ../remote/tags/*.html
 
 ./notes $notes
 
+rm notes
+
 if [ -n "$1" ]
 then
   falkon ../local/index.html
