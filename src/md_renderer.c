@@ -12,10 +12,22 @@
       MD_FLAG_TABLES
 
 static void
-render_str(const MD_CHAR *str, const MD_SIZE size, FILE *f) {
+render_verbatim(const MD_CHAR *str, const MD_SIZE size, FILE *f) {
   fwrite(str, 1, size, f);
   if ((errno = ferror(f))) {
-    perror("render_str");
+    perror("render_verbatim");
+  }
+}
+
+static void
+render_str(const MD_CHAR *str, const MD_SIZE size, FILE *f) {
+  for (MD_SIZE i = 0; i < size; i++) {
+    MD_CHAR c = str[i];
+    switch (c) {
+      case '>': fputs("&gt;", f); break;
+      case '<': fputs("&lt;", f); break;
+      default: fputc(c, f);
+    }
   }
 }
 
@@ -32,7 +44,7 @@ render_leave_h(MD_BLOCK_H_DETAIL *detail, FILE *f) {
 static void
 render_a(MD_SPAN_A_DETAIL *detail, FILE *f) {
   fputs("<a href='", f);
-  render_str(detail->href.text, detail->href.size, f);
+  render_verbatim(detail->href.text, detail->href.size, f);
   if (is_external(detail->href.text, detail->href.size)) {
     fputs("' class='external", f);
   }
@@ -42,14 +54,14 @@ render_a(MD_SPAN_A_DETAIL *detail, FILE *f) {
 static void
 render_code(MD_BLOCK_CODE_DETAIL *detail, FILE *f) {
   fputs("<pre class='", f);
-  render_str(detail->lang.text, detail->lang.size, f);
+  render_verbatim(detail->lang.text, detail->lang.size, f);
   fputs("'>", f);
 }
 
 static void
 render_wikilink(MD_SPAN_WIKILINK_DETAIL *detail, FILE *f) {
   fputs("<a href='", f);
-  render_str(detail->target.text, detail->target.size, f);
+  render_verbatim(detail->target.text, detail->target.size, f);
   if (is_external(detail->target.text, detail->target.size)) {
     fputs("' class='external", f);
   }
@@ -68,7 +80,7 @@ enter_block(MD_BLOCKTYPE type, void *detail, void *userdata) {
     case MD_BLOCK_HR: fputs("<hr>", f); break;
     case MD_BLOCK_H: render_enter_h(detail, f); break;
     case MD_BLOCK_CODE: render_code(detail, f); break;
-    case MD_BLOCK_HTML: fputs("<html>", f); break; // 'html' for verbosity
+    case MD_BLOCK_HTML: break; // ignore
     case MD_BLOCK_P: fputs("<p>", f); break;
     case MD_BLOCK_TABLE: fputs("<table>", f); break;
     case MD_BLOCK_THEAD: fputs("<thead>", f); break;
@@ -92,7 +104,7 @@ leave_block(MD_BLOCKTYPE type, void *detail, void *userdata) {
     case MD_BLOCK_HR: fputs("</hr>", f); break;
     case MD_BLOCK_H: render_leave_h(detail, f); break;
     case MD_BLOCK_CODE: fputs("</pre>", f); break;
-    case MD_BLOCK_HTML: fputs("</html>", f); break; // 'html' for verbosity
+    case MD_BLOCK_HTML: break; // ignore
     case MD_BLOCK_P: fputs("</p>", f); break;
     case MD_BLOCK_TABLE: fputs("</table>", f); break;
     case MD_BLOCK_THEAD: fputs("</thead>", f); break;
@@ -145,13 +157,13 @@ static int
 text(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE size, void *userdata) {
   FILE *f = userdata;
   switch (type) {
-    case MD_TEXT_NORMAL: render_str(text, size, f); break;
+    case MD_TEXT_NORMAL: render_verbatim(text, size, f); break;
     case MD_TEXT_NULLCHAR: break; // ignore
     case MD_TEXT_BR: fputs("<br><br>", f); break;
     case MD_TEXT_SOFTBR: fputs("<br>", f); break;
-    case MD_TEXT_ENTITY: fputs("[entity]", f); break;
+    case MD_TEXT_ENTITY: render_verbatim(text, size, f); break;
     case MD_TEXT_CODE: render_str(text, size, f); break;
-    case MD_TEXT_HTML: render_str(text, size, f); break;
+    case MD_TEXT_HTML: render_verbatim(text, size, f); break;
     case MD_TEXT_LATEXMATH: fputs("[some latexmath]", f); break;
   }
   return 0;
