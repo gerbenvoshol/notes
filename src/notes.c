@@ -9,7 +9,7 @@
 #define TAG_LIMIT 16
 #define TAG_STR_BUFFER 128
 #define STR_BUFFER 512
-#define NOTE_BUFFER 8192
+#define NOTE_BUFFER 16384
 
 #define REMOTE_PATH "../remote/"
 #define LOCAL_PATH "../local/"
@@ -336,6 +336,12 @@ main(int argc, const char **argv) {
     fprintf(stderr, "error writing remote indexes.\n");
     return 4;
   }
+  
+  FILE *tag_dict_f = fopen("../notes/tags.txt", "w");
+  for (int i = 0; i < tag_dict_size; i++) {
+    fprintf(tag_dict_f, "%s\n", tag_dict[i]);
+  }
+  fclose(tag_dict_f);
 
   return 0;
 }
