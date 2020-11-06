@@ -100,7 +100,8 @@ has_tag(const meta_note *note, const char *tag) {
 
 int
 process_tag_dict(char tag_dict[][TAG_STR_BUFFER], int tag_dict_size,
-                 meta_note *note, bool public) {
+                 meta_note *note, bool public) 
+{
   int new_tag_count = 0;
   for (int i = 0; i < note->tag_count; i++) {
     if ((!(public) || (public && note->public)) &&
@@ -114,8 +115,9 @@ process_tag_dict(char tag_dict[][TAG_STR_BUFFER], int tag_dict_size,
 }
 
 int
-read_note_file(const char *path, meta_note *note, char *note_contents,
+read_note_file(const char *path, meta_note *note, char **note_contents,
                size_t *size) {
+  size_t fsize;
   char base_name[STR_BUFFER];
   memset(base_name, 0, STR_BUFFER);
   basename(base_name, path);
@@ -125,10 +127,18 @@ read_note_file(const char *path, meta_note *note, char *note_contents,
     return 1;
   }
 
+  /* Determine the file size */
+  if (*size == 0) {
+    fseek(f, 0, SEEK_END);
+    fsize = ftell(f) + 1;
+    fseek(f, 0, SEEK_SET);
+    *note_contents = malloc(fsize * sizeof(char));
+  }
+
   sprintf(note->path, "%s.html", base_name);
   parse_metadata(f, note);
 
-  *size = read_content(f, note_contents, NOTE_BUFFER);
+  *size = read_content(f, *note_contents, fsize) + 1;
 
   fclose(f);
 
@@ -171,6 +181,10 @@ write_note(const char *dir, const char *note_contents, size_t size,
   }
 
   fputs("</header>", f);
+
+  // Support for MathJax an open-source JavaScript display engine for LaTeX, MathML, and AsciiMath notations
+  fputs("<script src=\"https://polyfill.io/v3/polyfill.min.js?features=es6\"></script>", f);
+  fputs("<script id=\"MathJax-script\" async src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js\"></script>", f);
 
   fprintf(f, "<%s>", wrapper_tag);
 
@@ -278,12 +292,12 @@ main(int argc, const char **argv) {
 
   int tag_dict_size = 0, public_tag_dict_size = 0;
   size_t size = 0;
-  char note_contents[NOTE_BUFFER];
-  char tag_dict[argc - 1][TAG_STR_BUFFER];
-  char public_tag_dict[argc - 1][TAG_STR_BUFFER];
+  char *note_contents;
+  char tag_dict[(argc - 1) * 16][TAG_STR_BUFFER];
+  char public_tag_dict[(argc - 1) * 16][TAG_STR_BUFFER];
   meta_note notes[argc - 1];
 
-  memset(note_contents, 0, NOTE_BUFFER);
+  //memset(note_contents, 0, NOTE_BUFFER);
   memset(notes, 0, sizeof(notes));
   memset(tag_dict, 0, sizeof(tag_dict));
   memset(public_tag_dict, 0, sizeof(public_tag_dict));
@@ -294,7 +308,7 @@ main(int argc, const char **argv) {
   // build all notes
   // ===========================================================================
   for (int i = 1; i < argc; i++) {
-    if (read_note_file(argv[i], &notes[i - 1], note_contents, &size)) {
+    if (read_note_file(argv[i], &notes[i - 1], &note_contents, &size)) {
       fprintf(stderr, "error reading note file '%s'.\n", argv[i]);
       continue;
     }
@@ -319,8 +333,11 @@ main(int argc, const char **argv) {
         return 3;
       }
     }
+    
+    free(note_contents);
+    size = 0;
 
-    memset(note_contents, 0, NOTE_BUFFER);
+    //memset(note_contents, 0, NOTE_BUFFER);
   }
 
   // build indexes
