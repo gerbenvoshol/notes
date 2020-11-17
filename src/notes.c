@@ -3,16 +3,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "md4c/md4c.h"
+#include "md4c/md4c-html.h"
+#include "md4c/entity.h"
+
 #include "helpers.h"
-#include "md_renderer.h"
 
 #define TAG_LIMIT 16
 #define TAG_STR_BUFFER 128
 #define STR_BUFFER 512
-#define NOTE_BUFFER 16384
+#define NOTE_BUFFER (1024 * 1024 * 5)
 
 #define REMOTE_PATH "../remote/"
 #define LOCAL_PATH "../local/"
+
+#define MD4C_FLAG_OPTIONS                                                      \
+  MD_FLAG_WIKILINKS | MD_FLAG_STRIKETHROUGH |         \
+      MD_FLAG_TABLES
 
 const char *note_head = "<head><meta charset='UTF-8'><title>%s</title>"
                         "<link rel=stylesheet href='../css/main.css'>"
@@ -145,6 +152,12 @@ read_note_file(const char *path, meta_note *note, char **note_contents,
   return 0;
 }
 
+void write_out(const MD_CHAR *data, MD_SIZE size, void* file)
+{
+  FILE *fout = file;
+  fwrite(data, size, 1, fout);
+}
+
 int
 write_note(const char *dir, const char *note_contents, size_t size,
            meta_note *note) {
@@ -188,7 +201,8 @@ write_note(const char *dir, const char *note_contents, size_t size,
 
   fprintf(f, "<%s>", wrapper_tag);
 
-  md_render(note_contents, size, f);
+  md_html(note_contents, size, write_out, f, MD4C_FLAG_OPTIONS, MD4C_FLAG_OPTIONS);
+  //md_render(note_contents, size, f);
 
   fprintf(f, "</%s>", wrapper_tag);
 

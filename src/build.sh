@@ -5,7 +5,7 @@ cd $DIR
 
 notes=$( ls -c ../notes/*.md )
 
-gcc notes.c md_renderer.c md4c/md4c.c helpers.c -o notes || {
+gcc -Wall -ggdb3 notes.c md4c/md4c.c md4c/entity.c md4c/md4c-html.c helpers.c -o notes || {
   exit 1
 }
 

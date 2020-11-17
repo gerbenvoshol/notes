@@ -34,7 +34,8 @@ bool is_external(const char *url, size_t size) {
 }
 
 size_t read_content(FILE *f, char *buffer, size_t size) {
-  for (size_t i = 0; i < size; i++) {
+  size_t i;
+  for (i = 0; i < size; i++) {
     int c = fgetc(f);
     if (feof(f)) {
       buffer[i] = '\0';
@@ -46,13 +47,14 @@ size_t read_content(FILE *f, char *buffer, size_t size) {
       buffer[i] = c;
     }
   }
-
+  fprintf(stderr, "buffer: %li\n", size);
+  fprintf(stderr, "location: %li\n", i);
   fprintf(stderr, "read_content: file size bigger than buffer size.\n");
   return size;
 }
 
 int copy_content(FILE *in_f, FILE *out_f) {
-  char buffer[512];
+  char buffer[1024*8];
 
   for (;;) {
     size_t sz = fread(buffer, 1, sizeof(buffer), in_f);
